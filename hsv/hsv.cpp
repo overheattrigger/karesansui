@@ -117,15 +117,65 @@ int extractTile(const string inputFileName, const string outputFileName)
 										std::cout << "bottom pixel is " << bottom << std::endl;
 										break;
 					}
+					
 					Mat tile(extractedImage, Rect(left, top, right - left, bottom - top));
+					resize(tile, tile, Size(), 0.44, 0.44);
+					std::cout << "cols = " << tile.cols << " rows = " << tile.rows << std::endl;
+					if (tile.cols < 800 && tile.rows < 600) {
+										cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
+										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((800 - tile.cols) / 2, (600 - tile.rows) / 2, tile.cols, tile.rows));
+										tile.copyTo(dar16_9_roi);
+										// imshow("tile", restore_aspect_img);
+										imwrite(outputFileName, restore_aspect_img);
+
+										return 0;
+					}
+
+					if (tile.cols >= 800 && tile.rows < 600) {
+										Mat out(tile, Rect((800 - tile.cols) / 2, 0, 800, tile.rows));	/*トリミング */
+										cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
+										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect(800, (600 - out.rows) / 2, 800, out.rows));
+										out.copyTo(dar16_9_roi);
+										imwrite(outputFileName, restore_aspect_img);
+//										imshow("tile", restore_aspect_img); // 
+
+										return 0;
+					}
+
+					if (tile.cols < 800 && tile.rows >= 600) {
+										Mat out(tile, Rect(0, (tile.rows - 600) / 2, tile.cols, 600));	/*トリミング */
+										cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
+										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((800 - out.cols) / 2, 0, out.cols, 600));
+										out.copyTo(dar16_9_roi);
+										imwrite(outputFileName, restore_aspect_img);
+										//								imshow("tile", restore_aspect_img);
+
+										return 0;
+					}
+
+					if (tile.cols >= 800 && tile.rows >= 600) {
+										Mat out(tile, Rect((tile.cols - 800) / 2, (tile.rows - 600) / 2, 800, 600));	/*トリミング */
+										imwrite(outputFileName, out);
+										//	imshow(outputFileName, out);
+
+										return 0;
+					}
   // 画像リサイズ
+
+					// if (tile.cols < 800 && tile.rows < 600) {
+					// 					cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
+					// 					cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((tile.cols- 800) / 2,(tile.rows - 600) / 2, tile.cols, tile.rows));
+					// 					tile.copyTo(dar16_9_roi);
+					// 					imshow("tile", restore_aspect_img);
+					// }
 					/* 結果表示 */
 					// imshow("extract", extractedImage);
-					// imshow("tile", tile);
+					
 					std::cout << "output = " << outputFileName << std::endl;
-					imwrite(outputFileName, tile);
+					// imwrite(outputFileName, tile);
+
 					return 0;
-					// waitKey(0);						/* 入力待機 */
+
 }
 
 int main (int argc, char **argv)
