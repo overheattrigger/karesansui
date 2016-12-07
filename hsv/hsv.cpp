@@ -2,7 +2,11 @@
 #include "opencv2/opencv.hpp"
 #include <cvaux.h>
 #include <highgui.h>
- 
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+// #include <direct.h>
+
 using namespace cv;
 
 void colorExtraction(cv::Mat* src, cv::Mat* dst,
@@ -64,14 +68,14 @@ void colorExtraction(cv::Mat* src, cv::Mat* dst,
     *dst = maskedImage;
 }
 
-int main (int argc, char **argv)
+int extractTile(const string inputFileName, const string outputFileName)
 {
-					// (1)load a specified file as a 3-channel color image
-					const char *imagename = argc > 1 ? argv[1] : "../image/library.png";
-					Mat im = imread(imagename);		/* 画像の取得 */
+					Mat im = imread(inputFileName.c_str());		/* 画像の取得 */
 					Mat hsv, lab, ycr;
 					if(!im.data) return -1;			/* エラー処理 */
 
+					if (im.cols != 5312 && im.rows != 2988) { return -1; }
+					
 					Mat roi(im, Rect(2500, 600, 2400, 1800));	/*トリミング */
 					Mat extractedImage;
 				 colorExtraction(&roi, &extractedImage, CV_BGR2HSV, 90, 150, 100, 255, 70, 255);
@@ -105,30 +109,71 @@ int main (int argc, char **argv)
 										}
 					}
 					
-					src = extractedImage.ptr<cv::Vec3b>(top + 500);
-					for (int i = 0; i < 1800 - top - 500; i++) {
+					src = extractedImage.ptr<cv::Vec3b>(top + 300);
+					for (int i = 0; i < 1800 - top - 300 - 1; i++) {
 										cv::Vec3b hsv0 = src[i * 2400 + 1200];
-										// cv::Vec3b hsv1 = src[(i + 10) * 2400 + 1200];
-										// cv::Vec3b hsv2 = src[(i + 20) * 2400 + 1200];
 										if (hsv0[0] != 0 || hsv0[1] != 0 || hsv0[2] != 0) { continue;	}
-										// if (hsv1[0] != 0 || hsv1[1] != 0 || hsv1[2] != 0) { continue; }
-										// if (hsv2[0] != 0 || hsv2[1] != 0 || hsv2[2] != 0) { continue; }
-										
-										// if (hsv0[2] == hsv1[2] && hsv1[2] == hsv2[2] && hsv0[1] == hsv1[1] && hsv1[1] == hsv2[1] && hsv0[0] == hsv1[0] && hsv1[0] == nhsv2[0]) {
-										// if (hsv[2] == 0) {
-										bottom = i + top + 500;
+										bottom = i + top + 300;
 										std::cout << "bottom pixel is " << bottom << std::endl;
 										break;
-									
 					}
 					Mat tile(extractedImage, Rect(left, top, right - left, bottom - top));
+  // 画像リサイズ
 					/* 結果表示 */
-					// imshow("Original", im);
-					// imshow("ROI", roi);
-					imshow("extract", extractedImage);
-					imshow("tile", tile);
-					waitKey(0);						/* 入力待機 */
- 
+					// imshow("extract", extractedImage);
+					// imshow("tile", tile);
+					std::cout << "output = " << outputFileName << std::endl;
+					imwrite(outputFileName, tile);
+					return 0;
+					// waitKey(0);						/* 入力待機 */
+}
+
+int main (int argc, char **argv)
+{
+					const string rawDataDirectory = "../../RawData/";
+					const string dataSetDirectory = "../../DataSet/";
+
+					// 元データのディレクトリ
+					string imageID = "ID-0000/";
+					if (argc > 1) {
+										string input = argv[1];
+										if (input.find("/") != -1) {
+															imageID = input;
+										} else {
+															imageID = input + "/";
+										}
+					} 
+					// 出力先のディレクトリの作成
+					// struct stat st;
+					// if(stat((dataSetDirectory + imageID).c_str(), &st) != 0){
+     //     mkdir((dataSetDirectory + imageID).c_str(), 0777);
+					// }
+					
+					int labelCount = 0;
+					// 元データを一つずつ列挙して画像を切って保存
+					DIR* dp=opendir((rawDataDirectory + imageID).c_str());
+					if (dp!=NULL)
+					{
+										struct dirent* dent;
+										do{
+															dent = readdir(dp);
+															if (dent == NULL) { continue; }
+															string fileName = dent->d_name;
+															if (fileName == "." || fileName == "..") { continue;	}
+															string targetFile = rawDataDirectory + imageID + fileName;
+															char buf[8];
+															sprintf(buf, "%04d", labelCount);
+															string count = buf;
+															string outputFile = dataSetDirectory + imageID + count + ".jpg";
+															std::cout << "targetFile is = " << targetFile << " output = " << outputFile <<std::endl;
+															if (extractTile(targetFile, outputFile) == -1) { continue; }
+															labelCount++;
+
+										}while(dent!=NULL);
+										closedir(dp);
+					}
+
+
 					return 0;
 }
 
