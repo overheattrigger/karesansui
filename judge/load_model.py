@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 import math
 import tensorflow as tf
-import random
+
 tf.logging.set_verbosity(tf.logging.INFO)
 NUM_CLASSES = 18
 IMAGE_ROWS = 600
@@ -22,8 +22,8 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('train', 'train.txt', 'File name of train data')
 flags.DEFINE_string('test', 'test.txt', 'File name of train data')
 flags.DEFINE_string('train_dir', '/tmp/data', 'Directory to put the training data.')
-flags.DEFINE_integer('max_steps', 1000, 'Number of steps to run trainer.')
-flags.DEFINE_integer('batch_size', 50, 'Batch size'
+flags.DEFINE_integer('max_steps', 200, 'Number of steps to run trainer.')
+flags.DEFINE_integer('batch_size', 10, 'Batch size'
                      'Must divide evenly into the dataset sizes.')
 flags.DEFINE_float('learning_rate', 1e-4, 'Initial learning rate.')
 
@@ -134,21 +134,7 @@ def evaluation(logits, labels):
 
 
 if __name__ == '__main__':
-
-    # ファイルを開く
-    print ("open training data")
-    f = open('train.txt', 'r')
-    #データを入れる配列
-    train_list = []
-    i = 0
-    for line in f:
-        # 改行を除いてスペース区切りにする
-        line = line.rstrip()
-        l = line.split()
-        train_list.append((l[0], l[1]))
-    f.close()
-
-    print("open test data")
+  # ファイルを開く
     f = open('test.txt', 'r')
     test_image = []
     test_label = []
@@ -156,6 +142,8 @@ if __name__ == '__main__':
         line = line.rstrip()
         l = line.split()
         img = cv2.imread(l[0])
+        print (l[0])
+        print (l[1])
         # img = cv2.resize(img, (28, 28))
         test_image.append(img.flatten().astype(np.float32)/255.0)
         tmp = np.zeros(NUM_CLASSES)
@@ -164,7 +152,7 @@ if __name__ == '__main__':
     test_image = np.asarray(test_image)
     test_label = np.asarray(test_label)
     f.close()
-    
+
     # Create the model
     x = tf.placeholder(tf.float32, [None, IMAGE_PIXELS])
     W = tf.Variable(tf.zeros([IMAGE_PIXELS, NUM_CLASSES]))
@@ -192,35 +180,13 @@ if __name__ == '__main__':
     sess = tf.InteractiveSession()
     tf.global_variables_initializer().run()
 
+
     # TensorBoardで表示する値の設定
-    # summary_op = tf.merge_all_summaries()
-    # summary_writer = tf.train.SummaryWriter(FLAGS.train_dir, sess.graph_def)
+    summary_op = tf.merge_all_summaries()
+    summary_writer = tf.train.SummaryWriter(FLAGS.train_dir, sess.graph_def)
 
-    # Train
-    for j in range(FLAGS.max_steps):
-        print ("start train! %d" % j )
-        l = random.sample(train_list, FLAGS.batch_size)
-        train_image = []
-        train_label = []
-        
-        for i in l:
-            img = cv2.imread(i[0])
-
-            # 一列にした後、0-1のfloat値にする
-            train_image.append(img.flatten().astype(np.float32)/255.0)
-            # ラベルを1-of-k方式で用意する
-            tmp = np.zeros(NUM_CLASSES)
-            tmp[int(i[1])] = 1
-            train_label.append(tmp)
-            #numpy形式に変換
-        train_image = np.asarray(train_image)
-        train_label = np.asarray(train_label)
-        sess.run(train_step, feed_dict={x: train_image, y_: train_label})
-        if ((j % 100) == 0):
-            correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
-            accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-            print ("step %d, training accuracy %g"%(j, sess.run(accuracy, feed_dict={x: test_image, y_: test_label})))
-
+    saver.restore(sess, "./model.ckpt")
+    print("Model restored.")
     # Test trained model
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -228,4 +194,4 @@ if __name__ == '__main__':
                                         y_: test_label}))
 
     # 最終的なモデルを保存
-    save_path = saver.save(sess, "model.ckpt", global_step=FLAGS.max_steps)
+    save_path = saver.save(sess, "model.ckpt")
