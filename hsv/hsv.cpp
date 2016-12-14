@@ -9,6 +9,9 @@
 
 using namespace cv;
 
+#define ROWS 2400
+#define COLS 2400
+
 void colorExtraction(cv::Mat* src, cv::Mat* dst,
     int code,
     int ch1Lower, int ch1Upper,
@@ -76,14 +79,14 @@ int extractTile(const string inputFileName, const string outputFileName)
 
 					if (im.cols != 5312 && im.rows != 2988) { return -1; }
 					
-					Mat roi(im, Rect(2500, 600, 2400, 1800));	/*トリミング */
+					Mat roi(im, Rect(2500, 500, COLS, ROWS));	/*トリミング */
 					Mat extractedImage;
 				 colorExtraction(&roi, &extractedImage, CV_BGR2HSV, 90, 150, 100, 255, 70, 255);
 
 					int left, right, top, bottom;
-					// まずはtopを見てみる
-					cv::Vec3b *src = extractedImage.ptr<cv::Vec3b>(900 - 1);
-					for ( int i = 0; i < 2400; i++) {
+					// まずはleftを見てみる
+					cv::Vec3b *src = extractedImage.ptr<cv::Vec3b>(ROWS / 2 - 1);
+					for ( int i = 0; i < COLS; i++) {
 										cv::Vec3b hsv = src[i];
 										if (hsv[2] != 0) {
 															left = i;
@@ -91,7 +94,7 @@ int extractTile(const string inputFileName, const string outputFileName)
 															break;
 										}
 					}
-					for ( int i = 2400 - 1; 0 < i; i--) {
+					for ( int i = COLS - 1; 0 < i; i--) {
 										cv::Vec3b hsv = src[i];
 										if (hsv[2] != 0) {
 															right = i;
@@ -100,8 +103,8 @@ int extractTile(const string inputFileName, const string outputFileName)
 										}
 					}
 					src = extractedImage.ptr<cv::Vec3b>(0);
-					for (int i = 0; i < 1800; i++) {
-										cv::Vec3b hsv = src[i * 2400 + 1200];
+					for (int i = 0; i < ROWS; i++) {
+										cv::Vec3b hsv = src[i * COLS + COLS / 2];
 										if (hsv[2] != 0) {
 															top = i;
 															std::cout << "top pixel is " << top << std::endl;
@@ -110,8 +113,8 @@ int extractTile(const string inputFileName, const string outputFileName)
 					}
 					
 					src = extractedImage.ptr<cv::Vec3b>(top + 300);
-					for (int i = 0; i < 1800 - top - 300 - 1; i++) {
-										cv::Vec3b hsv0 = src[i * 2400 + 1200];
+					for (int i = 0; i < ROWS - top - 300 - 1; i++) {
+										cv::Vec3b hsv0 = src[i * COLS + COLS / 2];
 										if (hsv0[0] != 0 || hsv0[1] != 0 || hsv0[2] != 0) { continue;	}
 										bottom = i + top + 300;
 										std::cout << "bottom pixel is " << bottom << std::endl;
