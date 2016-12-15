@@ -194,4 +194,14 @@ if __name__ == '__main__':
                                         y_: test_label}))
 
     # 最終的なモデルを保存
-    save_path = saver.save(sess, "model.ckpt")
+    save_path = saver.save(sess, "model.ckpt",global_step=1000)
+
+
+
+
+
+
+
+
+
+

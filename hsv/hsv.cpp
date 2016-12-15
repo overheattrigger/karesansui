@@ -11,7 +11,9 @@ using namespace cv;
 
 #define ROWS 2400
 #define COLS 2400
-
+const int kCutRows = 150;
+const int kCutCols = 200;
+					
 void colorExtraction(cv::Mat* src, cv::Mat* dst,
     int code,
     int ch1Lower, int ch1Upper,
@@ -122,11 +124,13 @@ int extractTile(const string inputFileName, const string outputFileName)
 					}
 					
 					Mat tile(extractedImage, Rect(left, top, right - left, bottom - top));
-					resize(tile, tile, Size(), 0.44, 0.44);
+					resize(tile, tile, Size(), 0.11, 0.11);
+					
 					std::cout << "cols = " << tile.cols << " rows = " << tile.rows << std::endl;
-					if (tile.cols < 800 && tile.rows < 600) {
-										cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
-										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((800 - tile.cols) / 2, (600 - tile.rows) / 2, tile.cols, tile.rows));
+					if (tile.cols < kCutCols && tile.rows < kCutRows) {
+										std::cerr << "cols < kCutCols, rows < kCutRows" << std::endl;
+										cv::Mat restore_aspect_img(cv::Size(kCutCols, kCutRows), CV_8UC3, CV_RGB(0,0,0));
+										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((kCutCols - tile.cols) / 2, (kCutRows - tile.rows) / 2, tile.cols, tile.rows));
 										tile.copyTo(dar16_9_roi);
 										// imshow("tile", restore_aspect_img);
 										imwrite(outputFileName, restore_aspect_img);
@@ -134,10 +138,11 @@ int extractTile(const string inputFileName, const string outputFileName)
 										return 0;
 					}
 
-					if (tile.cols >= 800 && tile.rows < 600) {
-										Mat out(tile, Rect((800 - tile.cols) / 2, 0, 800, tile.rows));	/*トリミング */
-										cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
-										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect(800, (600 - out.rows) / 2, 800, out.rows));
+					if (tile.cols >= kCutCols && tile.rows < kCutRows) {
+										std::cerr << "cols >= kCutCols, rows < kCutRows" << std::endl;
+										Mat out(tile, Rect((kCutCols - tile.cols) / 2, 0, kCutCols, tile.rows));	/*トリミング */
+										cv::Mat restore_aspect_img(cv::Size(kCutCols, kCutRows), CV_8UC3, CV_RGB(0,0,0));
+										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect(kCutCols, (kCutRows - out.rows) / 2, kCutCols, out.rows));
 										out.copyTo(dar16_9_roi);
 										imwrite(outputFileName, restore_aspect_img);
 //										imshow("tile", restore_aspect_img); // 
@@ -145,19 +150,22 @@ int extractTile(const string inputFileName, const string outputFileName)
 										return 0;
 					}
 
-					if (tile.cols < 800 && tile.rows >= 600) {
-										Mat out(tile, Rect(0, (tile.rows - 600) / 2, tile.cols, 600));	/*トリミング */
-										cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
-										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((800 - out.cols) / 2, 0, out.cols, 600));
+					if (tile.cols < kCutCols && tile.rows >= kCutRows) {
+										std::cerr << "cols < kCutCols, rows >= kCutRows" << std::endl;
+										Mat out(tile, Rect(0, (tile.rows - kCutRows) / 2, tile.cols, kCutRows));	/*トリミング */
+										cv::Mat restore_aspect_img(cv::Size(kCutCols, kCutRows), CV_8UC3, CV_RGB(0,0,0));
+										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((kCutCols - out.cols) / 2, 0, out.cols, out.rows));
 										out.copyTo(dar16_9_roi);
+										
 										imwrite(outputFileName, restore_aspect_img);
 										//								imshow("tile", restore_aspect_img);
 
 										return 0;
 					}
 
-					if (tile.cols >= 800 && tile.rows >= 600) {
-										Mat out(tile, Rect((tile.cols - 800) / 2, (tile.rows - 600) / 2, 800, 600));	/*トリミング */
+					if (tile.cols >= kCutCols && tile.rows >= kCutRows) {
+										std::cerr << "cols >= kCutCols, rows >= kCutRows" << std::endl;
+										Mat out(tile, Rect((tile.cols - kCutCols) / 2, (tile.rows - kCutRows) / 2, kCutCols, kCutRows));	/*トリミング */
 										imwrite(outputFileName, out);
 										//	imshow(outputFileName, out);
 
@@ -185,6 +193,7 @@ int main (int argc, char **argv)
 {
 					const string rawDataDirectory = "../../RawData/";
 					const string dataSetDirectory = "../../DataSet/";
+					const string testDataDirectory = "../../TestData/";
 
 					// 元データのディレクトリ
 					string imageID = "ID-0000/";
@@ -217,7 +226,9 @@ int main (int argc, char **argv)
 															char buf[8];
 															sprintf(buf, "%04d", labelCount);
 															string count = buf;
-															string outputFile = dataSetDirectory + imageID + count + ".jpg";
+															string outputFile = (labelCount < 90) ? dataSetDirectory : testDataDirectory;
+															outputFile += imageID + count + ".jpg";
+
 															std::cout << "targetFile is = " << targetFile << " output = " << outputFile <<std::endl;
 															if (extractTile(targetFile, outputFile) == -1) { continue; }
 															labelCount++;

@@ -23,7 +23,6 @@
 ../../DataSet/00001/0062.jpg 0
 ../../DataSet/00001/0015.jpg 0
 ../../DataSet/00001/0049.jpg 0
-../../DataSet/00001/0090.jpg 0
 ../../DataSet/00001/0075.jpg 0
 ../../DataSet/00001/0089.jpg 0
 ../../DataSet/00001/0045.jpg 0
@@ -114,7 +113,6 @@
 ../../DataSet/00005/0062.jpg 1
 ../../DataSet/00005/0015.jpg 1
 ../../DataSet/00005/0049.jpg 1
-../../DataSet/00005/0090.jpg 1
 ../../DataSet/00005/0075.jpg 1
 ../../DataSet/00005/0089.jpg 1
 ../../DataSet/00005/0045.jpg 1
@@ -205,7 +203,6 @@
 ../../DataSet/00006/0062.jpg 2
 ../../DataSet/00006/0015.jpg 2
 ../../DataSet/00006/0049.jpg 2
-../../DataSet/00006/0090.jpg 2
 ../../DataSet/00006/0075.jpg 2
 ../../DataSet/00006/0089.jpg 2
 ../../DataSet/00006/0045.jpg 2
@@ -296,7 +293,6 @@
 ../../DataSet/00007/0062.jpg 3
 ../../DataSet/00007/0015.jpg 3
 ../../DataSet/00007/0049.jpg 3
-../../DataSet/00007/0090.jpg 3
 ../../DataSet/00007/0075.jpg 3
 ../../DataSet/00007/0089.jpg 3
 ../../DataSet/00007/0045.jpg 3
@@ -387,7 +383,6 @@
 ../../DataSet/00008/0062.jpg 4
 ../../DataSet/00008/0015.jpg 4
 ../../DataSet/00008/0049.jpg 4
-../../DataSet/00008/0090.jpg 4
 ../../DataSet/00008/0075.jpg 4
 ../../DataSet/00008/0089.jpg 4
 ../../DataSet/00008/0045.jpg 4
@@ -478,7 +473,6 @@
 ../../DataSet/00010/0062.jpg 5
 ../../DataSet/00010/0015.jpg 5
 ../../DataSet/00010/0049.jpg 5
-../../DataSet/00010/0090.jpg 5
 ../../DataSet/00010/0075.jpg 5
 ../../DataSet/00010/0089.jpg 5
 ../../DataSet/00010/0045.jpg 5
@@ -569,7 +563,6 @@
 ../../DataSet/00011/0062.jpg 6
 ../../DataSet/00011/0015.jpg 6
 ../../DataSet/00011/0049.jpg 6
-../../DataSet/00011/0090.jpg 6
 ../../DataSet/00011/0075.jpg 6
 ../../DataSet/00011/0089.jpg 6
 ../../DataSet/00011/0045.jpg 6
@@ -660,7 +653,6 @@
 ../../DataSet/00014/0062.jpg 7
 ../../DataSet/00014/0015.jpg 7
 ../../DataSet/00014/0049.jpg 7
-../../DataSet/00014/0090.jpg 7
 ../../DataSet/00014/0075.jpg 7
 ../../DataSet/00014/0089.jpg 7
 ../../DataSet/00014/0045.jpg 7
@@ -751,7 +743,6 @@
 ../../DataSet/00016/0062.jpg 8
 ../../DataSet/00016/0015.jpg 8
 ../../DataSet/00016/0049.jpg 8
-../../DataSet/00016/0090.jpg 8
 ../../DataSet/00016/0075.jpg 8
 ../../DataSet/00016/0089.jpg 8
 ../../DataSet/00016/0045.jpg 8
@@ -842,7 +833,6 @@
 ../../DataSet/00019/0062.jpg 9
 ../../DataSet/00019/0015.jpg 9
 ../../DataSet/00019/0049.jpg 9
-../../DataSet/00019/0090.jpg 9
 ../../DataSet/00019/0075.jpg 9
 ../../DataSet/00019/0089.jpg 9
 ../../DataSet/00019/0045.jpg 9
@@ -933,7 +923,6 @@
 ../../DataSet/00020/0062.jpg 10
 ../../DataSet/00020/0015.jpg 10
 ../../DataSet/00020/0049.jpg 10
-../../DataSet/00020/0090.jpg 10
 ../../DataSet/00020/0075.jpg 10
 ../../DataSet/00020/0089.jpg 10
 ../../DataSet/00020/0045.jpg 10
@@ -1024,7 +1013,6 @@
 ../../DataSet/00022/0062.jpg 11
 ../../DataSet/00022/0015.jpg 11
 ../../DataSet/00022/0049.jpg 11
-../../DataSet/00022/0090.jpg 11
 ../../DataSet/00022/0075.jpg 11
 ../../DataSet/00022/0089.jpg 11
 ../../DataSet/00022/0045.jpg 11
@@ -1115,7 +1103,6 @@
 ../../DataSet/10002/0062.jpg 12
 ../../DataSet/10002/0015.jpg 12
 ../../DataSet/10002/0049.jpg 12
-../../DataSet/10002/0090.jpg 12
 ../../DataSet/10002/0075.jpg 12
 ../../DataSet/10002/0089.jpg 12
 ../../DataSet/10002/0045.jpg 12
@@ -1206,7 +1193,6 @@
 ../../DataSet/10003/0062.jpg 13
 ../../DataSet/10003/0015.jpg 13
 ../../DataSet/10003/0049.jpg 13
-../../DataSet/10003/0090.jpg 13
 ../../DataSet/10003/0075.jpg 13
 ../../DataSet/10003/0089.jpg 13
 ../../DataSet/10003/0045.jpg 13
@@ -1297,7 +1283,6 @@
 ../../DataSet/10004/0062.jpg 14
 ../../DataSet/10004/0015.jpg 14
 ../../DataSet/10004/0049.jpg 14
-../../DataSet/10004/0090.jpg 14
 ../../DataSet/10004/0075.jpg 14
 ../../DataSet/10004/0089.jpg 14
 ../../DataSet/10004/0045.jpg 14
@@ -1388,7 +1373,6 @@
 ../../DataSet/10012/0062.jpg 15
 ../../DataSet/10012/0015.jpg 15
 ../../DataSet/10012/0049.jpg 15
-../../DataSet/10012/0090.jpg 15
 ../../DataSet/10012/0075.jpg 15
 ../../DataSet/10012/0089.jpg 15
 ../../DataSet/10012/0045.jpg 15
@@ -1479,7 +1463,6 @@
 ../../DataSet/10013/0062.jpg 16
 ../../DataSet/10013/0015.jpg 16
 ../../DataSet/10013/0049.jpg 16
-../../DataSet/10013/0090.jpg 16
 ../../DataSet/10013/0075.jpg 16
 ../../DataSet/10013/0089.jpg 16
 ../../DataSet/10013/0045.jpg 16
@@ -1570,7 +1553,6 @@
 ../../DataSet/10017/0062.jpg 17
 ../../DataSet/10017/0015.jpg 17
 ../../DataSet/10017/0049.jpg 17
-../../DataSet/10017/0090.jpg 17
 ../../DataSet/10017/0075.jpg 17
 ../../DataSet/10017/0089.jpg 17
 ../../DataSet/10017/0045.jpg 17
