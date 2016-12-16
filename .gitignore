@@ -2,3 +2,5 @@ hough/hough
 cut/cut
 make_dataset/make_dataset
 hsv/hsv
+judge/checkpoint
+judge/model.*
