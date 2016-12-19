@@ -11,8 +11,11 @@ using namespace cv;
 
 #define ROWS 2400
 #define COLS 2400
-const int kCutRows = 150;
-const int kCutCols = 200;
+const int kCutRows = 60;
+const int kCutCols = 70;
+const string kRawDataDirectory = "../../RawData/";
+const string kDataSetDirectory = "../../TrainData/";
+const string kTestDataDirectory = "../../TestData/";
 					
 void colorExtraction(cv::Mat* src, cv::Mat* dst,
     int code,
@@ -122,19 +125,19 @@ int extractTile(const string inputFileName, const string outputFileName)
 										std::cout << "bottom pixel is " << bottom << std::endl;
 										break;
 					}
-					
 					Mat tile(extractedImage, Rect(left, top, right - left, bottom - top));
-					resize(tile, tile, Size(), 0.11, 0.11);
-					
+
+					double reshapeRateRow = 1.0 * kCutRows / tile.rows;
+					double reshapeRateCol = 1.0 * kCutCols / tile.cols;
+					double rate = (reshapeRateCol < reshapeRateRow) ? reshapeRateCol : reshapeRateRow;
+					resize(tile, tile, Size(), rate, rate);
 					std::cout << "cols = " << tile.cols << " rows = " << tile.rows << std::endl;
 					if (tile.cols < kCutCols && tile.rows < kCutRows) {
 										std::cerr << "cols < kCutCols, rows < kCutRows" << std::endl;
 										cv::Mat restore_aspect_img(cv::Size(kCutCols, kCutRows), CV_8UC3, CV_RGB(0,0,0));
 										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((kCutCols - tile.cols) / 2, (kCutRows - tile.rows) / 2, tile.cols, tile.rows));
 										tile.copyTo(dar16_9_roi);
-										// imshow("tile", restore_aspect_img);
 										imwrite(outputFileName, restore_aspect_img);
-
 										return 0;
 					}
 
@@ -142,11 +145,9 @@ int extractTile(const string inputFileName, const string outputFileName)
 										std::cerr << "cols >= kCutCols, rows < kCutRows" << std::endl;
 										Mat out(tile, Rect((kCutCols - tile.cols) / 2, 0, kCutCols, tile.rows));	/*トリミング */
 										cv::Mat restore_aspect_img(cv::Size(kCutCols, kCutRows), CV_8UC3, CV_RGB(0,0,0));
-										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect(kCutCols, (kCutRows - out.rows) / 2, kCutCols, out.rows));
+										cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect(0, (kCutRows - out.rows) / 2, kCutCols, out.rows));
 										out.copyTo(dar16_9_roi);
 										imwrite(outputFileName, restore_aspect_img);
-//										imshow("tile", restore_aspect_img); // 
-
 										return 0;
 					}
 
@@ -158,62 +159,32 @@ int extractTile(const string inputFileName, const string outputFileName)
 										out.copyTo(dar16_9_roi);
 										
 										imwrite(outputFileName, restore_aspect_img);
-										//								imshow("tile", restore_aspect_img);
-
 										return 0;
 					}
-
 					if (tile.cols >= kCutCols && tile.rows >= kCutRows) {
 										std::cerr << "cols >= kCutCols, rows >= kCutRows" << std::endl;
 										Mat out(tile, Rect((tile.cols - kCutCols) / 2, (tile.rows - kCutRows) / 2, kCutCols, kCutRows));	/*トリミング */
 										imwrite(outputFileName, out);
-										//	imshow(outputFileName, out);
-
 										return 0;
 					}
-  // 画像リサイズ
-
-					// if (tile.cols < 800 && tile.rows < 600) {
-					// 					cv::Mat restore_aspect_img(cv::Size(800, 600), CV_8UC3, CV_RGB(0,0,0));
-					// 					cv::Mat dar16_9_roi(restore_aspect_img, cv::Rect((tile.cols- 800) / 2,(tile.rows - 600) / 2, tile.cols, tile.rows));
-					// 					tile.copyTo(dar16_9_roi);
-					// 					imshow("tile", restore_aspect_img);
-					// }
-					/* 結果表示 */
-					// imshow("extract", extractedImage);
-					
 					std::cout << "output = " << outputFileName << std::endl;
-					// imwrite(outputFileName, tile);
-
 					return 0;
-
 }
 
-int main (int argc, char **argv)
+void make_data_set(string inputID)
 {
-					const string rawDataDirectory = "../../RawData/";
-					const string dataSetDirectory = "../../DataSet/";
-					const string testDataDirectory = "../../TestData/";
-
 					// 元データのディレクトリ
-					string imageID = "ID-0000/";
-					if (argc > 1) {
-										string input = argv[1];
-										if (input.find("/") != -1) {
-															imageID = input;
-										} else {
-															imageID = input + "/";
-										}
-					} 
-					// 出力先のディレクトリの作成
-					// struct stat st;
-					// if(stat((dataSetDirectory + imageID).c_str(), &st) != 0){
-     //     mkdir((dataSetDirectory + imageID).c_str(), 0777);
-					// }
-					
+					string input =inputID;
+					string imageID;
+					if (input.find("/") != -1) {
+										imageID = inputID;
+					} else {
+										imageID = inputID + "/";
+					}
+									
 					int labelCount = 0;
 					// 元データを一つずつ列挙して画像を切って保存
-					DIR* dp=opendir((rawDataDirectory + imageID).c_str());
+					DIR* dp=opendir((kRawDataDirectory + imageID).c_str());
 					if (dp!=NULL)
 					{
 										struct dirent* dent;
@@ -222,11 +193,11 @@ int main (int argc, char **argv)
 															if (dent == NULL) { continue; }
 															string fileName = dent->d_name;
 															if (fileName == "." || fileName == "..") { continue;	}
-															string targetFile = rawDataDirectory + imageID + fileName;
+															string targetFile = kRawDataDirectory + imageID + fileName;
 															char buf[8];
 															sprintf(buf, "%04d", labelCount);
 															string count = buf;
-															string outputFile = (labelCount < 90) ? dataSetDirectory : testDataDirectory;
+															string outputFile = (labelCount < 90) ? kDataSetDirectory : kTestDataDirectory;
 															outputFile += imageID + count + ".jpg";
 
 															std::cout << "targetFile is = " << targetFile << " output = " << outputFile <<std::endl;
@@ -236,8 +207,23 @@ int main (int argc, char **argv)
 										}while(dent!=NULL);
 										closedir(dp);
 					}
+}
 
-
+int main (int argc, char **argv)
+{
+					DIR* dp=opendir((kRawDataDirectory).c_str());
+					if (dp!=NULL)
+					{
+										struct dirent* dent;
+										do{
+															dent = readdir(dp);
+															if (dent == NULL) { continue; }
+															string fileName = dent->d_name;
+															if (fileName == "." || fileName == "..") { continue;	}
+															make_data_set(fileName);
+										}while(dent!=NULL);
+										closedir(dp);
+					}
 					return 0;
 }
 
